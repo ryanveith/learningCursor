@@ -1,5 +1,7 @@
 """Roman numeral conversion (1-3999, standard subtractive notation)."""
 
+from errors import NumberFormatError
+
 MIN_ARABIC = 1
 MAX_ARABIC = 3999
 
@@ -23,15 +25,11 @@ SYMBOL_VALUES = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000
 VALID_SYMBOLS = set(SYMBOL_VALUES)
 
 
-class RomanError(ValueError):
-    """Raised when Roman numeral input or Arabic range is invalid."""
-
-
 def to_roman(n: int) -> str:
     if not isinstance(n, int) or isinstance(n, bool):
-        raise RomanError("Please enter a whole number.")
+        raise NumberFormatError("Please enter a whole number.")
     if n < MIN_ARABIC or n > MAX_ARABIC:
-        raise RomanError(f"Number must be between {MIN_ARABIC} and {MAX_ARABIC}.")
+        raise NumberFormatError(f"Number must be between {MIN_ARABIC} and {MAX_ARABIC}.")
 
     result: list[str] = []
     remaining = n
@@ -44,11 +42,11 @@ def to_roman(n: int) -> str:
 
 def to_arabic(s: str) -> int:
     if not s or not s.strip():
-        raise RomanError("Invalid Roman numeral: empty input.")
+        raise NumberFormatError("Invalid Roman numeral: empty input.")
 
     normalized = s.strip().upper()
     if any(ch not in VALID_SYMBOLS for ch in normalized):
-        raise RomanError(f"Invalid Roman numeral: {s!r}")
+        raise NumberFormatError(f"Invalid Roman numeral: {s!r}")
 
     total = 0
     prev = 0
@@ -61,9 +59,9 @@ def to_arabic(s: str) -> int:
         prev = value
 
     if total < MIN_ARABIC or total > MAX_ARABIC:
-        raise RomanError(f"Invalid Roman numeral: {s!r}")
+        raise NumberFormatError(f"Invalid Roman numeral: {s!r}")
 
     if to_roman(total) != normalized:
-        raise RomanError(f"Invalid Roman numeral: {s!r}")
+        raise NumberFormatError(f"Invalid Roman numeral: {s!r}")
 
     return total
