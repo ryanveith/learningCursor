@@ -1,7 +1,12 @@
-"""Interactive number converter (Roman, Arabic, hexadecimal, and binary)."""
+"""Interactive CLI for the number converter.
 
-import converter
-from errors import NumberFormatError
+Flow: pick input format → pick output format → enter values (repeat until the
+user chooses not to). All conversions delegate to ``converter.convert``; see
+format modules for per-notation input/output rules (prefixes, leading zeros, etc.).
+"""
+
+from number_converter import converter
+from number_converter.errors import NumberFormatError
 
 _FORMATS = {
     "1": "roman",
@@ -75,6 +80,7 @@ def ask_convert_again() -> bool:
 def main() -> None:
     print("Number Converter")
     while True:
+        # First step has no "back" — nothing to return to yet.
         from_fmt = read_format("Input format", allow_back=False)
         if from_fmt is None:
             print("Goodbye.")
@@ -102,7 +108,3 @@ def main() -> None:
             run_conversion(from_fmt, to_fmt)
             if not ask_convert_again():
                 break
-
-
-if __name__ == "__main__":
-    main()

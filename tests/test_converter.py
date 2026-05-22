@@ -2,9 +2,9 @@
 
 import unittest
 
-import converter
-import roman
-from errors import NumberFormatError
+from number_converter import converter
+from number_converter.errors import NumberFormatError
+from number_converter.formats import roman
 
 
 class TestConvertPairs(unittest.TestCase):

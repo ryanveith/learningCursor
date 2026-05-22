@@ -1,66 +1,65 @@
-"""Unit tests for binary conversion."""
+"""Unit tests for hexadecimal conversion."""
 
 import unittest
 
-from errors import NumberFormatError
+from number_converter.errors import NumberFormatError
+from number_converter.formats import hexadecimal
 
-import binary
 
-
-class TestArabicToBinary(unittest.TestCase):
+class TestArabicToHex(unittest.TestCase):
     def test_known_values(self) -> None:
-        self.assertEqual(binary.to_binary(0), "0")
-        self.assertEqual(binary.to_binary(10), "1010")
-        self.assertEqual(binary.to_binary(255), "11111111")
-        self.assertEqual(binary.to_binary(16), "10000")
+        self.assertEqual(hexadecimal.to_hex(0), "0")
+        self.assertEqual(hexadecimal.to_hex(10), "A")
+        self.assertEqual(hexadecimal.to_hex(255), "FF")
+        self.assertEqual(hexadecimal.to_hex(4096), "1000")
 
     def test_negative(self) -> None:
         with self.assertRaises(NumberFormatError):
-            binary.to_binary(-1)
+            hexadecimal.to_hex(-1)
 
     def test_non_integer(self) -> None:
         with self.assertRaises(NumberFormatError) as ctx:
-            binary.to_binary(3.14)  # type: ignore[arg-type]
+            hexadecimal.to_hex(3.14)  # type: ignore[arg-type]
         self.assertIn("whole number", str(ctx.exception))
 
         with self.assertRaises(NumberFormatError) as ctx:
-            binary.to_binary(True)
+            hexadecimal.to_hex(True)
         self.assertIn("whole number", str(ctx.exception))
 
 
-class TestBinaryToArabic(unittest.TestCase):
+class TestHexToArabic(unittest.TestCase):
     def test_known_values(self) -> None:
-        self.assertEqual(binary.from_binary("11111111"), 255)
-        self.assertEqual(binary.from_binary("1010"), 10)
+        self.assertEqual(hexadecimal.from_hex("FF"), 255)
+        self.assertEqual(hexadecimal.from_hex("a"), 10)
 
     def test_prefix_and_whitespace(self) -> None:
-        self.assertEqual(binary.from_binary("0b1010"), 10)
-        self.assertEqual(binary.from_binary("0B11111111"), 255)
-        self.assertEqual(binary.from_binary("  0b10000  "), 16)
+        self.assertEqual(hexadecimal.from_hex("0xFF"), 255)
+        self.assertEqual(hexadecimal.from_hex("0Xff"), 255)
+        self.assertEqual(hexadecimal.from_hex("  0x10  "), 16)
 
     def test_empty_and_whitespace(self) -> None:
         for value in ("", "   "):
             with self.subTest(value=repr(value)):
                 with self.assertRaises(NumberFormatError):
-                    binary.from_binary(value)
+                    hexadecimal.from_hex(value)
 
     def test_invalid_digits(self) -> None:
-        for value in ("102", "2", "10 10"):
+        for value in ("xyz", "0xG1", "12 34"):
             with self.subTest(value=value):
                 with self.assertRaises(NumberFormatError):
-                    binary.from_binary(value)
+                    hexadecimal.from_hex(value)
 
 
 class TestRoundTripConversion(unittest.TestCase):
     def test_spot_check(self) -> None:
         for n in (0, 1, 255, 256, 4096, 1_000_000):
             with self.subTest(n=n):
-                self.assertEqual(binary.from_binary(binary.to_binary(n)), n)
+                self.assertEqual(hexadecimal.from_hex(hexadecimal.to_hex(n)), n)
 
     def test_modest_range(self) -> None:
         for n in range(1001):
             with self.subTest(n=n):
-                self.assertEqual(binary.from_binary(binary.to_binary(n)), n)
+                self.assertEqual(hexadecimal.from_hex(hexadecimal.to_hex(n)), n)
 
 
 if __name__ == "__main__":

@@ -2,9 +2,8 @@
 
 import unittest
 
-from errors import NumberFormatError
-
-import roman
+from number_converter.errors import NumberFormatError
+from number_converter.formats import roman
 
 
 class TestArabicToRoman(unittest.TestCase):

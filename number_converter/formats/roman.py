@@ -1,6 +1,11 @@
-"""Roman numeral conversion (1-3999, standard subtractive notation)."""
+"""Roman numeral conversion (1–3999, standard subtractive notation).
 
-from errors import NumberFormatError
+Output uses canonical subtractive form (e.g. 4 → ``IV``, not ``IIII``).
+Input must be canonical: non-standard strings are rejected even if they
+would sum to a valid value (checked by re-encoding with ``to_roman``).
+"""
+
+from number_converter.errors import NumberFormatError
 
 MIN_ARABIC = 1
 MAX_ARABIC = 3999
@@ -61,6 +66,7 @@ def to_arabic(s: str) -> int:
     if total < MIN_ARABIC or total > MAX_ARABIC:
         raise NumberFormatError(f"Invalid Roman numeral: {s!r}")
 
+    # Reject non-canonical forms (e.g. IIII, VX) even when the sum is in range.
     if to_roman(total) != normalized:
         raise NumberFormatError(f"Invalid Roman numeral: {s!r}")
 
